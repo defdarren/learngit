@@ -1,0 +1,317 @@
+#include<ros/ros.h>
+#include<iostream>
+#include<sstream>
+#include<string>
+//#include<opencv/cv.h>
+//#include<opencv/highgui.h>
+#include<opencv2/imgproc/imgproc.hpp>
+#include<opencv2/highgui/highgui.hpp>
+#include<cmath>
+
+using namespace cv;
+using namespace std;
+
+
+// findContours Demo
+
+/*
+int thresh = 100;
+int max_thresh = 255;
+
+RNG rng(12345);
+
+Mat src;
+Mat src_gray;
+
+void thresh_callback(int,void*)
+{
+	Mat canny_output;
+	vector<vector<Point> > contours;
+	vector<Vec4i> hierarchy;
+
+	Canny(src_gray,canny_output,thresh,thresh*2,3);
+
+	findContours(canny_output,contours,hierarchy,CV_RETR_TREE,CV_CHAIN_APPROX_SIMPLE,Point(0,0));
+
+	Mat drawing = Mat::zeros(canny_output.size(),CV_8UC3);
+	for(int i = 0; i< contours.size(); i++)
+	{
+		Scalar color = Scalar(rng.uniform(0,255),rng.uniform(0,255),rng.uniform(0,255));
+		drawContours(drawing,contours,i,color,2,8,hierarchy,0,Point());
+	}
+	
+	namedWindow("Contours",CV_WINDOW_AUTOSIZE);
+	imshow("Contours",drawing);
+}
+
+int main(int argc,char** argv)
+{
+
+	double fscale = 0.15;
+	Size outSize;
+	Mat ResizeImage;
+	Mat image = imread(argv[1],1);
+	
+	outSize.width = image.cols*fscale;
+	outSize.height = image.rows*fscale;
+	resize(image,src,outSize,0,0,INTER_AREA);
+
+	cvtColor(src,src_gray,CV_BGR2GRAY);
+	blur(src_gray,src_gray,Size(3,3));
+
+	const char* source_window = "Source";
+	namedWindow(source_window,CV_WINDOW_AUTOSIZE);
+	imshow(source_window,src);
+
+	createTrackbar("Canny_thresh","Source",&thresh,max_thresh,thresh_callback);
+	thresh_callback(0,0);
+	
+	waitKey(0);
+	return 0;
+}
+
+*/
+
+/*
+// boundingRect  minEnclosingCircle
+
+int thresh = 100;
+
+int max_thresh = 255;
+
+RNG rng(12345);
+
+Mat src,src_gray;
+
+void thresh_callback(int,void*)
+{
+	Mat threshold_output;
+
+	vector<vector<Point> > contours;
+	vector<Vec4i> hierarchy;
+
+	threshold(src_gray,threshold_output,thresh,max_thresh,THRESH_BINARY);
+
+	findContours(threshold_output,contours,hierarchy,CV_RETR_TREE,CV_CHAIN_APPROX_SIMPLE,Point(0,0));
+
+	vector<vector<Point> > contours_poly(contours.size());
+
+	vector<Rect> boundRect(contours.size());
+
+	vector<Point2f> center(contours.size());
+
+	vector<float> radius(contours.size());
+
+	for(int i = 0; i < contours.size(); i++)
+	{
+		approxPolyDP(Mat(contours[i]),contours_poly[i],3,true);
+		boundRect[i] = boundingRect(Mat(contours_poly[i]));
+		minEnclosingCircle((Mat)contours_poly[i],center[i],radius[i]);
+	}
+
+	Mat drawing = Mat::zeros(threshold_output.size(),CV_8UC3);
+//	Mat drawing = threshold_output;
+//	Mat drawing = src;
+	
+	for(int i = 0 ; i < contours.size() ; i++)
+	{
+		Scalar color = Scalar(rng.uniform(0,255),rng.uniform(0,255),rng.uniform(0,255));
+
+//		drawContours(drawing,contours_poly,i,color,1,8,vector<Vec4i>(),0,Point());
+//		rectangle(drawing,boundRect[i].tl(),boundRect[i].br(),color,2,8,0);
+		circle(drawing,center[i],(int)radius[i],color,2,8,0);
+	}	
+
+	namedWindow("Contours",CV_WINDOW_AUTOSIZE);
+	imshow("Contours",drawing);
+}
+
+
+int main(int argc,char** argv)
+{
+	
+	double fscale = 0.15;
+	Size outSize;
+	Mat ResizeImage;
+	Mat image = imread(argv[1],1);
+	
+	outSize.width = image.cols*fscale;
+	outSize.height = image.rows*fscale;
+	resize(image,src,outSize,0,0,INTER_AREA);
+	
+//	src = imread(argv[1],1);	
+	
+	cvtColor(src,src_gray,CV_BGR2GRAY);
+	
+	blur(src_gray,src_gray,Size(3,3));
+
+	string source_window = "Source";
+	namedWindow(source_window,CV_WINDOW_AUTOSIZE);
+	imshow(source_window,src);
+
+	createTrackbar("Thresh",source_window,&thresh,max_thresh,thresh_callback);
+	thresh_callback(0,0);
+	
+	waitKey(0);
+	return 0;
+}
+
+*/
+
+
+
+
+/*
+
+//find Trackbar
+
+Mat src,src_gray;
+
+int thresh = 100;
+int thresh_max = 255;
+
+void thresh_callback(int,void*)
+{
+
+}
+
+int main(int argc,char** argv)
+{	
+	src = imread(argv[1],1);
+	string source_window = "src_img";
+	namedWindow(source_window,CV_WINDOW_AUTOSIZE);
+	imshow(source_window,src);
+	
+	createTrackbar("thresh",source_window,&thresh,thresh_max,thresh_callback);
+	thresh_callback(0,0);
+	waitKey(0);
+	return 0;	
+}
+*/
+
+
+
+
+
+//	Hough Circle detection
+
+int main(int argc,char** argv)
+{
+	int H_MIN = 74;
+	int H_MAX = 144;
+	int S_MIN = 61;
+	int S_MAX = 147;
+	int V_MIN = 170;
+	int V_MAX = 255;
+
+
+	Mat src;
+	Mat src_gray;
+
+	double fscale = 0.3;
+	Size outSize;
+	Mat ResizeImage;
+	Mat image = imread(argv[1],1);
+	
+	outSize.width = image.cols*fscale;
+	outSize.height = image.rows*fscale;
+	resize(image,src,outSize,0,0,INTER_AREA);
+
+//	src = imread(argv[1],1);
+
+//	cvtColor(src,src_gray,CV_BGR2GRAY);
+
+	inRange(src,Scalar(H_MIN,S_MIN,V_MIN),Scalar(H_MAX,S_MAX,V_MAX),src_gray);
+
+	GaussianBlur(src_gray,src_gray,Size(49,49),2,2);
+
+	vector<Vec3f> circles;
+
+	HoughCircles(src_gray,circles,CV_HOUGH_GRADIENT,1,src_gray.rows/8,200,100,0,0);
+
+	for(size_t i = 0; i < circles.size(); i++)
+	{
+		Point center(cvRound(circles[i][0]),cvRound(circles[i][1]));
+		int radius = cvRound(circles[i][2]);
+		circle(src,center,3,Scalar(0,255,0),-1,8,0);
+		circle(src,center,radius,Scalar(0,0,255),3,8,0);
+		circle(src_gray,center,3,Scalar(0,255,0),-1,8,0);
+		circle(src_gray,center,radius,Scalar(0,0,255),3,8,0);
+	}
+	
+	string window_name = "Hough Circle Transform Demo";
+	string window_name2 = "hough gray_src";
+	namedWindow(window_name,CV_WINDOW_AUTOSIZE);
+
+	imshow(window_name,src);
+	imshow(window_name2,src_gray);
+
+	waitKey(0);
+	return 0;
+}
+
+
+/*
+
+// failed to make it
+void setLabel(Mat& im,const string label,vector<Point>& contour)
+{
+	int fontface = FONT_HERSHEY_SIMPLEX;
+	double scale = 0.4;
+	int thickness = 1;
+	int baseline = 0;
+
+	Size text = getTextSize(label,fontface,scale,thickness,&baseline);
+	Rect r = boundingRect(contour);
+	
+	Point pt(r.x+((r.width-text.width)/2),r.y+((r.height+text.height)/2));
+	rectangle(im,pt+Point(0,baseline),pt+Point(text.width,-text.height),CV_RGB(255,255,255),CV_FILLED);
+	putText(im,label,pt,fontface,scale,CV_RGB(0,0,0),thickness);
+}
+
+int main(int argc,char** argv)
+{
+	Mat src;
+	
+	double fscale = 0.3;
+	Size outSize;
+	Mat ResizeImage;
+	Mat image = imread(argv[1],1);
+	
+	outSize.width = image.cols*fscale;
+	outSize.height = image.rows*fscale;
+	resize(image,src,outSize,0,0,INTER_AREA);
+	
+	src = imread(argv[1],1);
+	Mat gray;
+	cvtColor(src,gray,CV_BGR2GRAY);
+
+	Mat bw;
+	Canny(gray,bw,0,50,5);
+
+	vector<vector<cv::Point> > contours;
+	findContours(bw.clone(),contours,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_SIMPLE);
+
+	std::vector approx;
+
+	Mat dst = src.clone();
+
+	for(int i = 0; i < contours.size(); i++)
+	{
+		approxPolyDP(Mat(contours[i]),approx,arcLength(Mat(contours[i]),true)*0.02,true);
+
+		double area = contourArea(contours[i]);
+		Rect r = boundingRect(contours[i]);
+		int radius = r.width/2;
+		if(abs(1-((double)r.width/r.height)) <= 0,2 && abs(1-(area / (CV_PI * pow(radius,2)))) <=0.2)
+			setLabel(dst,"CIR",contours[i]);
+	}
+
+	imshow("src",src);
+	imshow("dst",dst);
+	
+	waitKey(0);
+	return 0;
+}
+
+*/
