@@ -1,0 +1,13 @@
+<launch>
+
+	<include file = "$(find config_my_bot)/launch/planning_context.launch">
+		<arg name = "load_robot_description" value = "true"/>		
+	</include>
+
+
+	<node name = "my_first_project" type = "robot_moveit" pkg = "moveit_kinematic_demo" respawn = "false" output = "screen">
+		<rosparam command = "load" file = "$(find config_my_bot)/config/kinematics.yaml" />
+	</node>
+
+	
+</launch>

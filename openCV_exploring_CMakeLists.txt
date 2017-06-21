@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(my_amazing_project)
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+add_executable(exe_openCV_exploring openCV_exploring.cpp)
+target_link_libraries(exe_openCV_exploring ${OpenCV_LIBS})
